@@ -1,0 +1,133 @@
+<apex:page standardController="Opportunity" extensions="IglooController" tabStyle="Opportunity">    
+  <script>  
+        var newWin=null;  
+  
+        function openPopup(){  
+            var url='/apex/TEZ_VFP_OpenPopupPage';
+            
+            var w = 300;
+            var h = 250;
+            
+            var left = (screen.width/2)-(w/2);
+            var top = (screen.height/2)-(h/2);
+            newWin=window.open(url, 'Popup','position=fixed,height=' + h +',width=' + w + ',left=' + left + ',top=' + top + ',resizable=no,scrollbars=yes,toolbar=no,status=no');  
+        }    
+                                    
+        function closePopup(){  
+            if (null!=newWin){  
+                newWin.close();  
+            }    
+        }
+        
+        function navigate() {
+            //window.location.href = window.location.href;
+            //window.location.href = '/apex/Igloo';
+            window.location.reload(true);
+        }
+    </script>
+  <apex:outputPanel rendered="{!((hasCredentials == true) && (detailMode == false))}">
+    <table id="theGrid">
+        <tbody>
+            <tr>
+                <td style="vertical-align: top; width: 30%;" rowspan="3">
+                    <span id="theText" style="font-style:italic">CATEGORY LABELS</span>
+                    <apex:dataList value="{!categories}" var="category">
+                        {!category.name}
+                        <apex:dataList value="{!category.labels}" var="label">
+                            {!label.name}
+                        </apex:dataList>
+                    </apex:dataList>
+                </td>
+                <td style="vertical-align: top;">
+                  <span id="theText" style="font-style:italic"><strong>BLOGS - </strong>Stage Selected: {!opportunityStage}</span>
+                  <apex:form >
+                      <apex:dataList value="{!blogArticles}" var="article">
+                        <div style="border: 1px solid #d4d4d4;clear: both; margin-bottom: 15px; padding: 5px 15px; background-color: #F8F8F8;">
+                            <h2 style="font-size: 1.5em;line-height: 1em;padding: .5em 0;">
+                                <!--<a href="{!article.href}" target="_blank" style="color:#00A9E0;">{!article.title}</a>-->
+                                <apex:commandLink value="{!article.title}" action="{!processLinkClick}" style="color:#00A9E0;">
+                                    <apex:param name="artId" value="{!article.id}" assignTo="{!itemId}"/>
+                                </apex:commandLink>
+                            </h2>
+                            <span style="color: #717171;display: block;font-size: 12px;margin-top: 4px;">{!article.created.ndate}</span>
+                            <p>
+                                {!article.description}
+                            </p>
+                        </div>
+                      </apex:dataList> 
+                  </apex:form>                   
+                </td>
+            </tr>
+            <tr>
+              <td style="vertical-align: top;">
+                  <span id="theText" style="font-style:italic"><strong>WIKIS - </strong>Delivery/Installation Status: {!opportunityDeliveryStatus}</span>
+                  <apex:form >
+                      <apex:dataList value="{!wikiArticles}" var="wikiArticle">
+                        <div style="border: 1px solid #d4d4d4;clear: both; margin-bottom: 15px; padding: 5px 15px; background-color: #DADADA;border-radius: 5px;">
+                            <h2 style="font-size: 1.5em;line-height: 1em;padding: .5em 0;">
+                                <!--<a href="{!wikiArticle.href}" target="_blank" style="color:#00A9E0;">{!wikiArticle.title}</a>-->
+                                <apex:commandLink value="{!wikiArticle.title}" action="{!processLinkClick}" style="color:#00A9E0;">
+                                    <apex:param name="artId" value="{!wikiArticle.id}" assignTo="{!itemId}"/>
+                                </apex:commandLink>
+                            </h2>
+                                
+                            <span style="color: #717171;display: block;font-size: 12px;margin-top: 4px;">{!wikiArticle.created.ndate}</span> 
+                        </div>
+                      </apex:dataList>
+                  </apex:form>
+              </td>
+            </tr>
+            <tr>
+              <td style="vertical-align: top;">
+                  <span id="theText" style="font-style:italic"><strong>COMPETITOR DOCUMENTS - </strong>Main Comopetitor: {!mainCompetitors}</span>
+                  <apex:dataList value="{!docuArticles}" var="docuArticle">
+                    <div style="border: 1px solid #d4d4d4;clear: both; margin-bottom: 15px; padding: 5px 15px; background-color: #FAD99E;border-radius: 5px;">
+                        <h2 style="font-size: 1.5em;line-height: 1em;padding: .5em 0;"><a href="{!docuArticle.href}" target="_blank" style="color:#00A9E0;">{!docuArticle.title}</a></h2>
+                        <span style="color: #717171;display: block;font-size: 12px;margin-top: 4px;">{!docuArticle.created.ndate}</span>
+                        <p>
+                            {!docuArticle.description}
+                        </p>
+                    </div>
+                  </apex:dataList>
+              </td>
+            </tr>
+        </tbody>
+    </table> 
+  </apex:outputPanel>
+  <apex:outputPanel rendered="{!hasCredentials == false}">
+      <apex:form >
+        <apex:outputLabel >Your credentials don't exist or are invalid. Please type your </apex:outputLabel>
+        <apex:commandlink onclick="openPopup();return false;" value="{!noCredentialsMessage}">  
+      </apex:commandlink></apex:form>
+  </apex:outputPanel>
+  
+  <apex:outputPanel rendered="{!detailMode == true}">
+      <apex:form >
+          <div>
+              <apex:commandButton id="goBackBtn" value="< Back" action="{!goBackLinkClick}" />
+          </div>
+          
+          <div style="border: 1px solid #d4d4d4;clear: both; margin-bottom: 15px; padding: 5px 15px; background-color: #F8F8F8;">
+            <h2 style="font-size: 1.5em;line-height: 1em;padding: .5em 0;">
+                {!itemDetail.title}
+            </h2>
+            <span style="color: #717171;display: block;font-size: 12px;margin-top: 4px;">{!itemDetail.created.ndate}</span>
+            <p>
+                {!itemDetail.description}
+            </p>
+            <div>
+                <apex:outputText escape="false" value="{!itemDetail.content}" />
+            </div>
+          </div>
+      </apex:form>      
+  </apex:outputPanel>
+  {!base64Value}
+  <!--
+  T1: {!t1} <br/>
+  T2: {!t2} <br/>
+  <apex:form >
+    <apex:commandLink value="refresh"/>
+  </apex:form>
+  <apex:outputLInk value="data:application/msword;content-disposition:attachment;base64,{!base64Value}">DOWNLOAD</apex:outputLInk>
+  -->
+</apex:page>

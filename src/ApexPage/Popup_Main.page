@@ -1,0 +1,25 @@
+<apex:page standardController="Opportunity">  
+    <script>  
+        var newWin=null;  
+  
+        function openPopup(){  
+            var url='/apex/TEZ_VFP_OpenPopupPage';
+            
+            var w = 300;
+            var h = 250;
+            
+            var left = (screen.width/2)-(w/2);
+            var top = (screen.height/2)-(h/2);
+            newWin=window.open(url, 'Popup','position=fixed,height=' + h +',width=' + w + ',left=' + left + ',top=' + top + ',resizable=no,scrollbars=yes,toolbar=no,status=no');  
+        }    
+                                    
+        function closePopup(){  
+            if (null!=newWin){  
+                newWin.close();  
+            }    
+        }  
+    </script>  
+    <apex:form >  
+        <apex:commandlink onclick="openPopup();return false;" value="Please provide you IGLOO credentials.">  
+    </apex:commandlink></apex:form>  
+</apex:page>

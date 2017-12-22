@@ -1,0 +1,69 @@
+<apex:page id="myPage" sidebar="false" showHeader="false" controller="IglooCredentialPopup">  
+    <script>  
+        function CloseWindow(){ 
+            console.log('here is closed');
+            var winMain=window.opener;  
+            if (null==winMain){  
+                winMain=window.parent.opener;  
+            }  
+            winMain.closePopup();  
+        }
+        
+        function jsUpdateCredentials(uname) {
+            try {
+                console.log('here is ', uname);
+                var test = '{!username}';
+                console.log('here is test  ', test);
+                
+                var usernameValue = document.getElementsByClassName('igloousername')[0].value;
+                var passwordValue = document.getElementsByClassName('igloopassword')[0].value;
+                console.log('here is test  ', usernameValue, ' - ', passwordValue);
+                
+                if (usernameValue && passwordValue) {
+                    var result1 = IglooCredentialPopup.updateCredentials(usernameValue, passwordValue, function(result, event){
+                        console.log('result: ', result);                        
+                        //opener.location.reload(true);
+                        //window.opener.location.href="/{!$CurrentPage.parameters.id}";
+                        //window.location.reload();
+                        //window.top.location.href = window.top.location.href;
+                        //window.opener.location.href=window.opener.location.href;
+                        
+                        window.opener.navigate();
+                        
+                        //window.parent.parent.location.reload();
+                        //window.top.location.reload();
+                        
+                        var winMain=window.opener;
+                        winMain.closePopup();
+                    });
+                    console.log(result1);
+                }
+            } catch (e) {
+                console.log('Error: ', e);
+            }            
+        }
+    </script>
+        
+        <apex:form id="myForm">
+            <apex:pageBlock title="" mode="edit">
+                <apex:pageBlockSection title="IGLOO" columns="1">
+                
+                    <apex:outputlabel value="Username" /><apex:inputText id="igloousername" value="{!username}" required="true" styleClass="igloousername" />
+                    <apex:outputlabel value="Password" /><apex:inputSecret id="igloopassword" value="{!password}" required="true" styleClass="igloopassword" />                    
+                
+                </apex:pageBlockSection>
+                <apex:pageBlockSection columns="1">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputPanel layout="none">
+                            
+                            <apex:commandbutton onclick="jsUpdateCredentials('{!username}');return false;" value="Save">
+                            </apex:commandbutton>
+                            <apex:commandbutton onclick="CloseWindow();return false;" value="Cancel">  
+                            </apex:commandbutton>
+                            
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:form>
+</apex:page>
